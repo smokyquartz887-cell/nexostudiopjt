@@ -1,0 +1,77 @@
+
+{% extends 'studio/base.html' %}
+
+{% block title %}{{ title }} · Nexo Studio{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <div class="eyebrow">CONFIGURAÇÃO</div>
+        <h1>{{ title }}</h1>
+        <div class="subhead">{{ subtitle }}</div>
+    </div>
+
+    {% if business and business.published %}
+        <a class="btn secondary"
+           href="{% url 'public_site' business.slug %}"
+           target="_blank">
+            Ver site ↗
+        </a>
+    {% endif %}
+</div>
+
+<div class="card form-card">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="message">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="form-grid">
+            {% for field in form %}
+                <div class="field"
+                     {% if field.name == 'description' or field.name == 'body' %}
+                         style="grid-column:1/-1"
+                     {% endif %}>
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text }}</span>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <span style="font-size:12px;color:#b42318">
+                            {{ error }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-actions">
+            <button class="btn" type="submit">
+                {% if title == 'Crie sua conta' %}
+                    Criar conta ↗
+                {% else %}
+                    Salvar alterações ↗
+                {% endif %}
+            </button>
+
+            {% if user.is_authenticated %}
+                <a class="btn ghost" href="{% url 'dashboard' %}">
+                    Voltar ao painel
+                </a>
+            {% else %}
+                <a class="btn ghost" href="{% url 'login' %}">
+                    Já tenho conta
+                </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+
+{% extends 'studio/base.html' %}
+
+{% block title %}Crie sua conta · Nexo Studio{% endblock %}
+
+{% block public_content %}
+<main class="main">
+    <div class="page-head">
+        <div>
+            <div class="eyebrow">COMECE GRATUITAMENTE</div>
+            <h1>{{ title }}</h1>
+            <div class="subhead">{{ subtitle }}</div>
+        </div>
+    </div>
+
+    <div class="card form-card">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="message">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="form-grid">
+                {% for field in form %}
+                    <div class="field">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <span class="helptext">
+                                {{ field.help_text }}
+                            </span>
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                            <span style="font-size:12px;color:#b42318">
+                                {{ error }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions">
+                <button class="btn" type="submit">
+                    Criar minha conta ↗
+                </button>
+
+                <a class="btn ghost" href="{% url 'login' %}">
+                    Já tenho conta
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

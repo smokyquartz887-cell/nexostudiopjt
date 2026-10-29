@@ -1,0 +1,108 @@
+
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Nexo Studio: construa a presença digital do seu negócio.">
+    <title>{% block title %}Nexo Studio{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <header class="topbar">
+            <div style="display:flex;align-items:center;gap:12px">
+                <button class="mobile-menu" data-menu-toggle aria-label="Abrir menu">☰</button>
+                <a class="brand" href="{% url 'dashboard' %}">
+                    <span class="brand-mark">N</span>Nexo <span>Studio</span>
+                </a>
+            </div>
+
+            <div class="top-actions">
+                <span class="user-name">{{ user.username }}</span>
+                <span class="avatar">{{ user.username|first|upper }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button class="btn ghost" type="submit">Sair</button>
+                </form>
+            </div>
+        </header>
+
+        <div class="shell">
+            <aside class="sidebar">
+                <div class="side-label">Negócio ativo</div>
+
+                {% if available_businesses %}
+                    <form method="post" action="{% url 'switch_business' %}" class="business-switch">
+                        {% csrf_token %}
+                        <label for="business_id">Negócio ativo</label>
+                        <select id="business_id" name="business_id">
+                            {% for option in available_businesses %}
+                                <option value="{{ option.id }}" {% if option.id == active_business_id %}selected{% endif %}>
+                                    {{ option.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn ghost" type="submit">Trocar negócio</button>
+                    </form>
+                {% endif %}
+
+                <div class="side-label">Workspace</div>
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <span class="nav-icon">▦</span> Visão geral
+                </a>
+
+                <div class="side-label">Meu site</div>
+                <a class="nav-link" href="{% url 'business_edit' %}"><span class="nav-icon">✳</span> Identidade visual</a>
+                <a class="nav-link" href="{% url 'pages_list' %}"><span class="nav-icon">▤</span> Páginas e menus</a>
+                <a class="nav-link" href="{% url 'image_library' %}"><span class="nav-icon">▧</span> Biblioteca de imagens</a>
+                <a class="nav-link" href="{% url 'faq_list' %}"><span class="nav-icon">✦</span> Chatbot e FAQ</a>
+                <a class="nav-link" href="{% url 'api_documentation' %}" target="_blank"><span class="nav-icon">⌘</span> API JSON</a>
+
+                <div class="side-label">Documentação acadêmica</div>
+                <a class="nav-link" href="{% static 'docs/GUIA_ACADEMICO.md' %}" target="_blank"><span class="nav-icon">▤</span> Como alterar e compreender</a>
+                <a class="nav-link" href="{% static 'docs/ARQUITETURA.md' %}" target="_blank"><span class="nav-icon">⌘</span> Arquitetura e componentes</a>
+                <a class="nav-link" href="{% static 'docs/SEGURANCA.md' %}" target="_blank"><span class="nav-icon">♢</span> Camada de segurança</a>
+
+                <div class="side-label">Operação</div>
+                <a class="nav-link" href="{% url 'offerings_list' %}"><span class="nav-icon">◇</span> Produtos e serviços</a>
+                <a class="nav-link" href="{% url 'activities_list' %}"><span class="nav-icon">↗</span> Movimentações</a>
+                <a class="nav-link" href="{% url 'reports' %}"><span class="nav-icon">▥</span> Relatórios</a>
+
+                <div class="side-bottom">
+                    <strong>Seu negócio, sua marca.</strong>
+                    <br>
+                    Personalize o site e acompanhe a operação em um só lugar.
+                </div>
+            </aside>
+
+            <main class="main">
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="message">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    {% else %}
+        <header class="topbar">
+            <a class="brand" href="{% url 'landing' %}">
+                <span class="brand-mark">N</span>Nexo <span>Studio</span>
+            </a>
+            <div class="top-actions">
+                <a href="{% url 'login' %}" class="btn ghost">Entrar</a>
+                <a href="{% url 'signup' %}" class="btn">Começar grátis ↗</a>
+            </div>
+        </header>
+
+        {% block public_content %}{% endblock %}
+    {% endif %}
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
